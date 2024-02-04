@@ -19,9 +19,10 @@
 var FSUtils = require("./FSUtils");
 
 var ROOT_BUILD_GRADLE_FILE = "platforms/android/build.gradle";
+var APP_BUILD_GRADLE_FILE = "platforms/android/build.gradle"; // new added
 var ROOT_REPOSITORIES_GRADLE_FILE = "platforms/android/repositories.gradle";
 var APP_REPOSITORIES_GRADLE_FILE = "platforms/android/app/repositories.gradle";
-var COMMENT = "//This line is added by cordova-plugin-hms-location plugin !!yep";
+var COMMENT = "//This line is added by cordova-plugin-hms-location plugin";
 var NEW_LINE = "\n";
 
 module.exports = function (context) {
@@ -38,6 +39,17 @@ module.exports = function (context) {
   var repoAddedLines = addHuaweiRepo(depAddedLines);
 
   FSUtils.writeFile(ROOT_BUILD_GRADLE_FILE, repoAddedLines.join(NEW_LINE));
+
+  // add for Core.properties issue
+  var appGradleContent = FSUtils.readFile(APP_BUILD_GRADLE_FILE, "UTF-8");
+  var linesApp = appGradleContent.split(NEW_LINE);
+
+  var packageOptionsAddedLines = addCorePackagingOptions(linesApp);
+
+  FSUtils.writeFile(
+    APP_BUILD_GRADLE_FILE,
+    packageOptionsAddedLines.join(NEW_LINE)
+  );
 
   updateRepositoriesGradle(ROOT_REPOSITORIES_GRADLE_FILE);
   updateRepositoriesGradle(APP_REPOSITORIES_GRADLE_FILE);
@@ -82,6 +94,25 @@ function addHuaweiRepo(lines) {
     }
   }
 
+  return lines;
+}
+
+// this is for core.properties issue
+function addCorePackagingOptions(lines) {
+  var CORE_PACKAGING_OPTION =
+    "packagingOptions { resources.merges.add('core.properties') }" + COMMENT;
+  var pattern = /(\s*)android {/m;
+  var index;
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    if (pattern.test(line)) {
+      index = i;
+      break;
+    }
+  }
+
+  lines.splice(index + 1, 0, CORE_PACKAGING_OPTION);
   return lines;
 }
 
