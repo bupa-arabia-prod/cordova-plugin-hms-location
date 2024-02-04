@@ -19,7 +19,7 @@
 var FSUtils = require("./FSUtils");
 
 var ROOT_BUILD_GRADLE_FILE = "platforms/android/build.gradle";
-var APP_BUILD_GRADLE_FILE = "platforms/android/build.gradle"; // new added
+var APP_BUILD_GRADLE_FILE = "platforms/android/app/build.gradle"; // new added
 var ROOT_REPOSITORIES_GRADLE_FILE = "platforms/android/repositories.gradle";
 var APP_REPOSITORIES_GRADLE_FILE = "platforms/android/app/repositories.gradle";
 var COMMENT = "//This line is added by cordova-plugin-hms-location plugin";
